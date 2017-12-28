@@ -1,9 +1,6 @@
 import requests
 import json
 
-def test():
-	query(None, None)
-
 def gen_urls(cxs, question):
 	urls = []
 	for cx in cxs:

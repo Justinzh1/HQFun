@@ -22,17 +22,18 @@ tool = tools[0]
 # Beware that some OCR tools (Tesseract for instance)
 # may return empty boxes
 
-id = 0
-# while True:
-# 	command = raw_input("::")
-# 	if command == 's':
-# 		filename = process.screenshot(id)
-# 		try:
-# 			line_and_word_boxes = tool.image_to_string(
-# 				Image.open(filename), lang="eng",
-# 				builder=pyocr.builders.LineBoxBuilder()
-# 			)
-# 			question, choice = process.parse_input(line_and_word_boxes[1:])
-# 		except:
-# 			continue
-# 		id += 1
+id = 0 # TODO organize saving screenshots better
+while True:
+	command = raw_input("::")
+	if command == 's':
+		filename = process.screenshot(id)
+		try:
+			line_and_word_boxes = tool.image_to_string(
+				Image.open(filename), lang="eng",
+				builder=pyocr.builders.LineBoxBuilder()
+			)
+			question, choices = process.parse_input(line_and_word_boxes[1:])
+			count = gsearch.keywords(question, choices)
+		except:
+			continue
+		id += 1
