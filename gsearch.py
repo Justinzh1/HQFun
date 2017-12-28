@@ -1,11 +1,16 @@
+# Dependencies 
 import requests
 import json
 import re
-import pdb
-
 from collections import Counter
 from bs4 import BeautifulSoup
 
+# Debugging
+import pdb
+import time
+from multiprocessing.dummy import Pool as ThreadPool 
+
+# Link regex
 is_link = re.compile("http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
 
 def normalize(counter):
@@ -26,24 +31,26 @@ def get_top_links(question, keywords):
 		searchables.append(''.join([base_question,' ',key]))
 	return searchables
 
-def create_soup(urls, question, keywords, links):
+def create_soup(urls, question, keywords, links, cap):
 	for url in urls:
 		res = requests.get(url)
 		if res.status_code == 200:
 			body = BeautifulSoup(res.text, 'html.parser')
 			link_area = body.find("div", { "id" : "search" })
-			find_links(link_area, links)
+			find_links(link_area, links, cap)
 
 def filter_links(url):
 	return is_link.match(url) is not None and 'google' not in url and 'youtube' not in url and 'pdf' not in url
 
-def find_links(soup, links):
-	for link in soup.find_all('a'):
+def find_links(soup, links, cap):
+	for i,link in enumerate(soup.find_all('a')):
+		if i > cap:
+			return
 		url = link.get('href').split('=')[1].split('&')[0]
 		if filter_links(url.lower()):
 			links.add(url)
 
-def query(question, keywords):
+def query(question, keywords, cap=10):
 	print("Beginning search")
 	keywords = [k.lower()for k in keywords]
 	keyword_count = Counter()
@@ -51,7 +58,7 @@ def query(question, keywords):
 		keyword_count[key] = 0
 	urls = get_top_links(question, keywords)
 	links = set()
-	create_soup(urls, question, keywords, links)
+	create_soup(urls, question, keywords, links, cap)
 	print("{} Sources found.", len(links))
 
 	""" TODO: Bottleneck issues
@@ -59,11 +66,13 @@ def query(question, keywords):
 			- Threshold to stop when one Pr[keyword] > c
 	"""
 	ptime, i = 3, 0
+	# now = time.time()
 	for link in links: # Multi threading
 		keyword_query(link, keywords, keyword_count)
 		if i % 3 == 0:
 			print(normalize(keyword_count))
 		i += 1
+	# print("Elapsed time: {}", time.time() - now)
 
 def keyword_query(link, keywords, keyword_count):
 
@@ -83,4 +92,6 @@ def scan_body(page, keywords, keyword_count):
 	for key in keywords:
 		keyword_count[key] += page_counter[key]
 
-# query("Which of the following is a citrus fruit ", ["Watermelon", "Orange", "Potato"])
+# query("Which of the following is a citrus fruit", [unicode("Watermelon","utf-8"), unicode("Potato","utf-8"),unicode("Orange","utf-8")], 10)
+
+
