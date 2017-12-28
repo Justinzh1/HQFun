@@ -1,4 +1,5 @@
 import pyscreenshot as ImageGrab
+import datetime
 
 def parse_input(body):
 	return print_body(body)
@@ -17,9 +18,11 @@ def print_body(body):
 
 		return question, options
 
-def screenshot(id):
+def screenshot():
 	im = ImageGrab.grab(bbox=(0,20,495,878))
-	filename = "{}.png".format(id)
+	now = datetime.datetime.now()
+	id = now.strftime("%Y-%m-%d%H:%M")
+	filename = "images/{}.png".format(id)
 	im.save(filename)
 	return filename
 
