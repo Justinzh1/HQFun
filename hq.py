@@ -26,14 +26,16 @@ id = 0 # TODO organize saving screenshots better
 while True:
 	command = raw_input("::")
 	if command == 's':
-		filename = process.screenshot(id)
+		filename = process.screenshot()
 		try:
 			line_and_word_boxes = tool.image_to_string(
 				Image.open(filename), lang="eng",
 				builder=pyocr.builders.LineBoxBuilder()
 			)
-			question, choices = process.parse_input(line_and_word_boxes[1:])
-			count = gsearch.keywords(question, choices)
+			# pdb.set_trace()
+			question, choices = process.parse_input(line_and_word_boxes)
+			count = gsearch.query(question, choices)
+			print(count)
 		except:
 			continue
 		id += 1

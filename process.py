@@ -1,17 +1,17 @@
 import pyscreenshot as ImageGrab
 import datetime
+import pdb
 
 def parse_input(body):
 	return print_body(body)
 
 def print_body(body):
 	if (body):
-		stripped = body[1:len(body)-3]
-		question = "".join([s.content + " " for s in stripped[0:len(stripped)-3]])
+		stripped = body[0:len(body)-4]
+		question = "".join([(s.content + " ") for s in stripped])
 		print(question)
 
-		options = body[len(body)-6:len(body)-1]
-		options = [o.content for o in options]	
+		options = [body[-4].content,body[-3].content,body[-2].content]	
 
 		for choice, a in zip(['A','B','C'], options):
 			print(choice + ". " + a)
@@ -19,7 +19,7 @@ def print_body(body):
 		return question, options
 
 def screenshot():
-	im = ImageGrab.grab(bbox=(0,20,495,878))
+	im = ImageGrab.grab(bbox=(0,158,495,468))
 	now = datetime.datetime.now()
 	id = now.strftime("%Y-%m-%d%H:%M")
 	filename = "images/{}.png".format(id)
