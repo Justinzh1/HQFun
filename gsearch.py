@@ -59,11 +59,12 @@ def query(question, keywords, cap=10):
 	urls = get_top_links(question, keywords)
 	links = set()
 	create_soup(urls, question, keywords, links, cap)
-	print("{} Sources found.", len(links))
+	print("{} Sources found.".format(len(links)))
 
 	""" TODO: Bottleneck issues
 			- Multi thread search the different URLS
 			- Threshold to stop when one Pr[keyword] > c
+			- If exceeds 15 seconds terminate (Must account for latency)
 	"""
 	ptime, i = 3, 0
 	# now = time.time()

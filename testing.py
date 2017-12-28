@@ -19,10 +19,11 @@ now = None
 
 question = "Which of the following is a citrus fruit"
 choices = [unicode("Watermelon","utf-8"), unicode("Potato","utf-8"),unicode("Orange","utf-8")] 
-for i in range(20):
+for i in range(10):
 	now = time.time()
 	with suppress_stdout():
 		g.query(question, choices)
 	elapsed = time.time() - now
-	print("Elapsed time: {}", elapsed)
+	print("Elapsed time: {}".format(elapsed))
 	averages.append(elapsed)
+print("Average time: {}".format(sum(averages)/float(len(averages))))
