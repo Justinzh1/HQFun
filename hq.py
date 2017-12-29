@@ -6,7 +6,7 @@ import pyocr.builders
 import pdb
 
 import process
-import gsearch
+import gsearch as g
 
 tools = pyocr.get_available_tools()
 if len(tools) == 0:
@@ -23,6 +23,8 @@ tool = tools[0]
 # may return empty boxes
 
 id = 0 # TODO organize saving screenshots better
+
+
 while True:
 	command = raw_input("::")
 	if command == 's':
@@ -34,7 +36,7 @@ while True:
 			)
 			# pdb.set_trace()
 			question, choices = process.parse_input(line_and_word_boxes)
-			count = gsearch.query(question, choices)
+			count = gsearch.query(question, choices, 7)
 			print(count)
 		except:
 			continue
