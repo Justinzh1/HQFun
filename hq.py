@@ -23,21 +23,15 @@ tool = tools[0]
 # may return empty boxes
 
 id = 0 # TODO organize saving screenshots better
-
-
+gs = g.GSearch()
 while True:
-	command = raw_input("::")
-	if command == 's':
+	command = raw_input(">")
+	if command == '':
 		filename = process.screenshot()
-		try:
-			line_and_word_boxes = tool.image_to_string(
-				Image.open(filename), lang="eng",
-				builder=pyocr.builders.LineBoxBuilder()
-			)
-			# pdb.set_trace()
-			question, choices = process.parse_input(line_and_word_boxes)
-			count = gsearch.query(question, choices, 7)
-			print(count)
-		except:
-			continue
+		line_and_word_boxes = tool.image_to_string(
+			Image.open(filename), lang="eng",
+			builder=pyocr.builders.LineBoxBuilder()
+		)
+		question, choices = process.parse_input(line_and_word_boxes)
+		count = gs.query(question, choices, 7)
 		id += 1

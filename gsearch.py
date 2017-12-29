@@ -4,11 +4,11 @@ import json
 import re
 from collections import Counter
 from bs4 import BeautifulSoup
+import sys
 
 # Debugging
 import pdb
 import time
-# from multiprocessing.dummy import Pool as ThreadPool 
 
 # Link regex
 is_link = re.compile("http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
@@ -20,9 +20,13 @@ class GSearch:
 		n = 0
 		for k,v in counter.items():
 			n += v
+		max_value, max_option = 0, None
 		for k,v in counter.items():
-			normalized[k] = round((v + 1)/(float(n) + 1),4)
-		return normalized
+			update = round((v + 1)/(float(n) + 1),4)
+			if update > max_value:
+				max_value, max_option = round, k
+			normalized[k] = update
+		return normalized, max_option
 
 	def get_top_links(self, question, keywords):
 		url = "https://www.google.com/search?q="
@@ -69,24 +73,30 @@ class GSearch:
 				- If exceeds 15 seconds terminate (Must account for latency)
 		"""
 		ptime, i = 3, 0
-		# now = time.time()
+		normalized, best = None, None
 		for link in links: # Multi threading
-			self.keyword_query(link, keywords, keyword_count)
+			err = self.keyword_query(link, keywords, keyword_count)
+			if not err:
+				i += 1
+				continue
 			if i % 3 == 0:
-				print(self.normalize(keyword_count))
+				normalized, best = self.normalize(keyword_count)
+				print(best.upper(), normalized)
 			i += 1
-		# print("Elapsed time: {}", time.time() - now)
 
 	def keyword_query(self, link, keywords, keyword_count):
 
 		try:
-			res = requests.get(link, timeout=1)
-		except:
+			res = requests.get(link)
+		except requests.exceptions.Timeout:
 			res = None
+		except requests.exceptions.RequestException as e:
+			sys.exit(1)
 
 		if res and res.status_code == 200:
 			page = BeautifulSoup(res.text, 'html.parser')
 			self.scan_body(page, keywords, keyword_count)
+			return 200
 
 
 	def scan_body(self, page, keywords, keyword_count):
