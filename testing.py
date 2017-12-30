@@ -12,7 +12,7 @@ choices = [unicode("Watermelon","utf-8"), unicode("Potato","utf-8"),unicode("Ora
 ## Testing for query speed
 for i in range(5):
 	now = time.time()
-	gSearch.threaded_query(question, choices, 3)
+	gSearch.threaded_query(question, choices, 1)
 	elapsed = time.time() - now
 	print("Elapsed time: {}".format(elapsed))
 	averages.append(elapsed)
@@ -27,4 +27,4 @@ for i in range(5):
 	averages.append(elapsed)
 a2 = sum(averages)/float(len(averages))
 
-print("Average time for query:{}, threaded_query:{}".format(a1,a2))
+print("Average time 5 threads:{}, 10 threads:{}".format(a1,a2))
