@@ -25,13 +25,13 @@ tool = tools[0]
 id = 0 # TODO organize saving screenshots better
 gs = g.GSearch()
 while True:
-	command = raw_input(">")
-	if command == '':
-		filename = process.screenshot()
-		line_and_word_boxes = tool.image_to_string(
-			Image.open(filename), lang="eng",
-			builder=pyocr.builders.LineBoxBuilder()
-		)
-		question, choices = process.parse_input(line_and_word_boxes)
-		count = gs.threaded_query(question, choices, 15)
-		id += 1
+    command = raw_input(">")
+    if command == '':
+        filename = process.screenshot()
+        line_and_word_boxes = tool.image_to_string(
+            Image.open(filename), lang="eng",
+            builder=pyocr.builders.LineBoxBuilder()
+        )
+        question, choices = process.parse_input(line_and_word_boxes)
+        count = gs.threaded_query(question, choices, 15)
+        id += 1

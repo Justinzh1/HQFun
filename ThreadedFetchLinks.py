@@ -13,6 +13,7 @@ class ThreadedFetch:
     def __init__(self, urls, processes):
         self.urls = urls
         self.processes = processes
+        print(len(urls))
 
     def exception(self, request, exception):
         print("Problem: {}: {}".format(request.url, exception))

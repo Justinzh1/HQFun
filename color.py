@@ -8,11 +8,11 @@ def prLightGray(prt): return("\033[97m {}\033[00m" .format(prt))
 def prBlack(prt): return("\033[98m {}\033[00m" .format(prt))
 
 def text_color(s,value):
-	if value >= 0.66:
-		return prGreen(s)
-	elif value >= 0.33:
-		return prYellow(s)
-	elif value > 0:
-		return prRed(s)
-	else:
-		return prBlack(s)
+    if value >= 0.66:
+        return prGreen(s)
+    elif value >= 0.33:
+        return prYellow(s)
+    elif value > 0:
+        return prRed(s)
+    else:
+        return prBlack(s)
