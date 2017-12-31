@@ -159,7 +159,6 @@ class GSearch:
 
 
     def keyword_query(self, link, keywords, keyword_count):
-
         try:
             res = requests.get(link, timeout=3)
         except requests.exceptions.Timeout:
@@ -226,15 +225,21 @@ class GSearch:
                     self.digest_print(question, best_option, normalized, weights, zscore)
                 i += 1
 
-    def parallel_query(self, links, keywords, timeout=3):
-        results = []
-        page_lock = threading.Lock()    
+    def links_query(self, question, keywords, timeout=3):
+        pass
+
+    def page_bodies_query(self, links):
+        return self.parallel_query(self.push_to_pages, links)
+
+    def parallel_query(self, push_func, links, args=[], timeout=3):
+        result = []
+        lock = threading.Lock()
         for link in links:
-            threading.Thread(target=self.push_to_pages, args=(pages, page_lock, link, timeout)).start()
-        return results
+            threading.Thread(target=push_func, args=args+[result, lock, link, timeout]).start()
+        return result;
 
     # Finish this to do initial 4 searches
-    def push_to_links(self, urls, question, keywords, links, cap, timeout):
+    def push_to_links(self, urls, keywords, links, cap, timeout):
         try:
             res = requests.get(link, timeout)
         except requests.exceptions.Timeout:
@@ -256,7 +261,11 @@ class GSearch:
                     self.find_links(link_area, links, cap)
         return hits
 
-    def push_to_pages(self, pages, page_lock, link, timeout):
+    def push_to_pages(self, args):
+        pages = args[0]
+        page_lock = args[1]
+        link = args[2]
+        timeout = args[3]
         try:
             res = requests.get(link, timeout)
         except requests.exceptions.Timeout:
