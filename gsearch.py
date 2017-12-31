@@ -201,7 +201,6 @@ class GSearch:
 
         # Parallelize this
         now = time.time()
-        hits = self.create_soup(urls, question, keywords, links, 2 * cap)
         elapsed = time.time() - now
         print("First get time: {}".format(elapsed))
 
@@ -225,8 +224,21 @@ class GSearch:
                     self.digest_print(question, best_option, normalized, weights, zscore)
                 i += 1
 
-    def links_query(self, question, keywords, timeout=3):
-        pass
+    def links_query(self, qusetion, keywords, cap, timeout=3):
+        question, keywords, timeout = args
+        keywords = [k.lower() for k in keywords]
+        keyword_count, parents = self.process_keywords(keywords)
+
+        urls = self.get_top_links(question, keywords)
+
+        # Parallelize this
+        for url in urls:
+            args = [url, keywords, cap, timeout]
+            links = self.parallel_query(push_to_links, urls, args, timeout)
+
+        elapsed = time.time() - now
+
+        print("First get time: {}".format(elapsed))
 
     def page_bodies_query(self, links):
         return self.parallel_query(self.push_to_pages, links)
@@ -239,7 +251,7 @@ class GSearch:
         return result;
 
     # Finish this to do initial 4 searches
-    def push_to_links(self, urls, keywords, links, cap, timeout):
+    def push_to_links(self, url, keywords, cap, timeout):
         try:
             res = requests.get(link, timeout)
         except requests.exceptions.Timeout:
@@ -249,19 +261,17 @@ class GSearch:
 
         if res.status_code == 200:
             hits = Counter()
-            for i, url in enumerate(urls):
-                res = requests.get(url)
-                if res.status_code == 200:
-                    body = BeautifulSoup(res.text, 'html.parser')
-                    link_area = body.find("div", { "id" : "search" })
-                    results_area = body.find("div", { "id" : "resultStats"})
-                    hit = self.parse_number(results_area.text)
-                    if i > 0:
-                        hits[keywords[i-1]] = hit
-                    self.find_links(link_area, links, cap)
+            body = BeautifulSoup(res.text, 'html.parser')
+            link_area = body.find("div", { "id" : "search" })
+            results_area = body.find("div", { "id" : "resultStats"})
+            hit = self.parse_number(results_area.text)
+            if i > 0:
+                hits[keywords[i-1]] = hit
+            self.find_links(link_area, links, cap)
         return hits
 
     def push_to_pages(self, args):
+        args = args[0]
         pages = args[0]
         page_lock = args[1]
         link = args[2]
