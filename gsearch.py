@@ -23,13 +23,13 @@ is_link = re.compile("http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-
 banned = set(['the', 'a'])
 
 class GSearch:  
-    def digest_print(self, question, best, normalized, weights, z):
-        print("="*9)
-        print("\n{}?".format(c.prPurple(question)))
-        print("\nMAXIMUM: {}\n".format(c.prCyan(best)))
+    def digest_print(self, question, best, normalized, weights, z, i):
+        print("{}ITERATION {}{}".format("="*9, i, "="*9))
+        print("\n{}".format(c.prPurple(question + "?")))
+        print("\n MAXIMUM: {}\n".format(c.prCyan(best)))
         for k,v in normalized.items():
             zscore, key, value, weight = c.text_color(z[k],z[k]), k, c.text_color(v,v), c.text_color(weights[k], weights[k])
-            print("{}\n \t z:{} \t\t score:{} \t\t search_weight:{}".format(k, zscore, value, weight))
+            print(" {}\n \t z:{} \t\t score:{} \t\t search_weight:{}".format(k, zscore, value, weight))
         print("\n")
 
     def weighted_normalize(self, counter, weights):
@@ -143,7 +143,7 @@ class GSearch:
         weights, num_results, most_result = self.normalize(hits)
         fetch_pages = t.ThreadedFetch(links, processes)
         pages = fetch_pages.async()
-        print("{} {} {}".format(len(links), "~>", len(pages)))
+        # print("{} {} {}".format(len(links), "~>", len(pages)))
         ptime, i = 3,0
         max_value, best_option = 0, None
         for page in pages:
@@ -154,7 +154,7 @@ class GSearch:
                     zscore = self.weighted_normalize(keyword_count, weights)
                     if value > best_option:
                          max_value, best_option = value, option
-                    self.digest_print(question, best_option, normalized, weights, zscore)
+                    self.digest_print(question, best_option, normalized, weights, zscore, i)
                 i += 1
 
 
