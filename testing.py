@@ -12,7 +12,7 @@ choices = [unicode("Watermelon","utf-8"), unicode("Potato","utf-8"),unicode("Ora
 # Testing for query speed
 for i in range(5):
     now = time.time()
-    gSearch.threaded_query(question, choices, 5, 17)
+    gSearch.threaded_query(question, choices, 7, 20)
     elapsed = time.time() - now
     print("Elapsed time: {}".format(elapsed))
     averages.append(elapsed)
@@ -26,7 +26,7 @@ a1 = sum(averages)/float(len(averages))
 averages = []
 for i in range(5):
     now = time.time()
-    gSearch.threaded_query(question, choices, 5, 15)
+    gSearch.threaded_query(question, choices, 7, 17)
     elapsed = time.time() - now
     print("Elapsed time: {}".format(elapsed))
     averages.append(elapsed)
@@ -36,7 +36,7 @@ a2 = sum(averages)/float(len(averages))
 averages = []
 for i in range(5):
     now = time.time()
-    gSearch.threaded_query(question, choices, 5, 14)
+    gSearch.threaded_query(question, choices, 7, 18)
     elapsed = time.time() - now
     print("Elapsed time: {}".format(elapsed))
     averages.append(elapsed)
