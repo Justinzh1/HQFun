@@ -25,10 +25,11 @@ banned = set(['the', 'a'])
 class GSearch:  
     def digest_print(self, question, best, normalized, weights, z, i):
         print("{}ITERATION {}{}".format("="*9, i, "="*9))
-        print("\n{}".format(c.prPurple(question + "?")))
+        print("{}".format(normalized))
+        print("\n{}".format(c.prPurple(question)))
         print("\n MAXIMUM: {}\n".format(c.prCyan(best)))
         for k,v in normalized.items():
-            zscore, key, value, weight = c.text_color(z[k],z[k]), k, c.text_color(v,v), c.text_color(weights[k], weights[k])
+            zscore, key, value, weight = c.text_color(v * weights[k], v*weights[k]), k, c.text_color(v,v), c.text_color(weights[k], weights[k])
             print(" {}\n \t z:{} \t\t score:{} \t\t search_weight:{}".format(k, zscore, value, weight))
         print("\n")
 
@@ -36,9 +37,11 @@ class GSearch:
         normalized = Counter()
         n = 0.0
         for k,v in counter.items():
-            n += v * weights[k]
+            normalized[k] = (v * weights[k])
+            n += (v * weights[k])
         for k,v in counter.items():
-            normalized[k] = round((v * weights[k] + 1)/(float(n) + 1.0),4)
+            normalized[k] = normalized[k]/n
+
         return normalized
 
     def normalize(self, counter):
@@ -60,7 +63,7 @@ class GSearch:
         base_question = ''.join([url,question]) 
         searchables.append(base_question)
         for key in keywords:
-            searchables.append(''.join([base_question,' "',key, '"']))
+            searchables.append(''.join([base_question[2:],' "',key, '"']))
         return searchables
 
     def parse_number(self, s):
@@ -90,7 +93,7 @@ class GSearch:
                 return
             url = link.get('href').split('=')[1].split('&')[0]
             if self.filter_links(url.lower()):
-                links.add(url)
+                links.append(url)
         return links
 
     def process_keywords(self, keywords):
@@ -138,14 +141,15 @@ class GSearch:
         keyword_count, parents = self.process_keywords(keywords)
 
         urls = self.get_top_links(question, keywords)
-        links = set()
+        links = list()
         hits = self.create_soup(urls, question, keywords, links, 2 * cap)   
+
         weights, num_results, most_result = self.normalize(hits)
         fetch_pages = t.ThreadedFetch(links, processes)
         pages = fetch_pages.async()
         # print("{} {} {}".format(len(links), "~>", len(pages)))
         ptime, i = 3,0
-        max_value, best_option = 0, None
+        max_value, best_option, normalized, zscore = 0, None, None, None
         for page in pages:
             if page and page.text:
                 self.scan_body_with_parents(page, keyword_count, parents)
@@ -156,7 +160,8 @@ class GSearch:
                          max_value, best_option = value, option
                     self.digest_print(question, best_option, normalized, weights, zscore, i)
                 i += 1
-
+        print("\n{}\n".format(c.prCyan("="*9 + "TERMINATED" + "=" * 9)))
+        self.digest_print(question, best_option, normalized, weights, zscore, i)
 
     def keyword_query(self, link, keywords, keyword_count):
         try:

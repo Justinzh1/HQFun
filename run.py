@@ -16,7 +16,7 @@ if len(tools) == 0:
 tool = tools[0]
 
 def write_to_file(f, question, choices):
-    f.write('Q:{}?\n{}\n{}\n{}\n'.format(question, choices[0], choices[1], choices[2]))
+    f.write('Q:{}\n{}\n{}\n{}\n'.format(question, choices[0], choices[1], choices[2]))
     f.close()
 
 # list of box objects. For each box object:
@@ -33,6 +33,6 @@ line_and_word_boxes = tool.image_to_string(
     builder=pyocr.builders.LineBoxBuilder()
 )
 question, choices = process.parse_input(line_and_word_boxes)
-count = gs.threaded_query(question, choices, 5, 14)
+count = gs.threaded_query(question, choices, 4, 17)
 f = open('questions.txt', "a")
 write_to_file(f,question,choices)

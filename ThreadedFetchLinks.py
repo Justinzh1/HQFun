@@ -16,10 +16,10 @@ class ThreadedFetch:
         print(len(urls))
 
     def exception(self, request, exception):
-        print("Problem: {}: {}".format(request.url, exception))
+        print("Problem: {}: {}".format(request.url, "Failed"))
 
     def async(self):
-        results = grequests.imap((grequests.get(u, timeout=1) for u in self.urls), exception_handler=self.exception, size=self.processes)
+        results = grequests.imap((grequests.get(u, timeout=4) for u in self.urls), exception_handler=self.exception, size=self.processes)
         return results
 
 def process_args(lock, args):
