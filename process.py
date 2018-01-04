@@ -20,7 +20,7 @@ def print_body(body):
 
 def screenshot():
     # im = ImageGrab.grab(bbox=(0,148,495,468))
-    im = ImageGrab.grab(bbox=(11,260,362,400))
+    im = ImageGrab.grab(bbox=(0,220,562,520))
     now = datetime.datetime.now()
     id = now.strftime("%Y-%m-%d%H:%M")
     filename = "images/{}.png".format(id)

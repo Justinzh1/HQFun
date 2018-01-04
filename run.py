@@ -32,7 +32,7 @@ line_and_word_boxes = tool.image_to_string(
     Image.open(filename), lang="eng",
     builder=pyocr.builders.LineBoxBuilder()
 )
-question, choices = process.parse_input(line_and_word_boxes)
+question, choices = process.parse_input(line_and_word_boxes[:-1])
 count = gs.threaded_query(question, choices, 4, 17)
 f = open('questions.txt', "a")
 write_to_file(f,question,choices)

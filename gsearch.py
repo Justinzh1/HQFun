@@ -26,7 +26,7 @@ class GSearch:
     def digest_print(self, question, best, normalized, weights, z, i):
         print("{}ITERATION {}{}".format("="*9, i, "="*9))
         print("{}".format(normalized))
-        print("\n{}".format(c.prPurple(question)))
+        print("\n{}".format(question))
         print("\n MAXIMUM: {}\n".format(c.prCyan(best)))
         for k,v in normalized.items():
             zscore, key, value, weight = c.text_color(v * weights[k], v*weights[k]), k, c.text_color(v,v), c.text_color(weights[k], weights[k])
@@ -36,6 +36,7 @@ class GSearch:
     def weighted_normalize(self, counter, weights):
         normalized = Counter()
         n = 0.0
+        print(normalized)
         for k,v in counter.items():
             normalized[k] = (v * weights[k])
             n += (v * weights[k])
@@ -63,7 +64,7 @@ class GSearch:
         base_question = ''.join([url,question]) 
         searchables.append(base_question)
         for key in keywords:
-            searchables.append(''.join([base_question[2:],' "',key, '"']))
+            searchables.append(''.join([base_question,' "',key, '"']))
         return searchables
 
     def parse_number(self, s):
